@@ -2,8 +2,9 @@
 
 Hooks onto Azimuth's natural data output for controller vibrations and translates them using Microsoft's GameInput service to craft a .DLL that directly outputs impulse trigger outputs to a supported controller.
 
-Current release is: v1.0
-Supports Azimuth version: v0.9.9
+Current release is: `v1.0`
+
+Supports Azimuth version: `v0.9.9`
 
 ## How to use
 1. Launch **Forza Horizon 2** (via Azimuth).
