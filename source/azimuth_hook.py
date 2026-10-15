@@ -1,7 +1,7 @@
 """
 Azimuth Hook helper module for Forza Horizon 2.
 """
-import ctypes, ctypes.wintypes as W, re, struct, time
+import ctypes, ctypes.wintypes as W, re, struct, threading, time
 
 k32 = ctypes.WinDLL("kernel32", use_last_error=True)
 PROCESS_ALL = 0x1F0FFF
@@ -72,6 +72,14 @@ class AzimuthHook:
         self.h = k32.OpenProcess(PROCESS_ALL, False, pid)
         if not self.h:
             raise RuntimeError("Can't open azimuth.exe (try running this as administrator).")
+        try:
+            self._install(pid)
+        except Exception:
+            k32.CloseHandle(self.h)
+            self.h = None
+            raise
+
+    def _install(self, pid):
         base, size = main_module(pid)
         if not base:
             raise RuntimeError("Can't read azimuth.exe modules.")
@@ -86,7 +94,6 @@ class AzimuthHook:
         match_addr = base + m.start()
         self.target = match_addr - HOOK_OFFSET_FROM_MATCH
         self.orig = self.read(self.target, STOLEN)
-        print(f"Hook target: 0x{self.target:X} (match at 0x{match_addr:X})")
 
         mem = self._alloc_near(self.target, 0x1000)
         if not mem:
@@ -187,11 +194,25 @@ class AzimuthHook:
             k32.CloseHandle(self.h)
 
 
-def wait_for_game(poll=2.0):
-    print("Waiting for Forza Horizon 2 (azimuth.exe)...")
-    while True:
+def wait_for_game(stop_event=None, on_status=None, poll=2.0, settle=8.0):
+    """Block until azimuth.exe is running, then attach to it.
+
+    on_status(state, detail) is called with "waiting" and "attaching".
+    Returns an AzimuthHook, or None if stop_event was set first.
+    """
+    stop_event = stop_event or threading.Event()
+
+    def say(state, detail=""):
+        if on_status:
+            on_status(state, detail)
+
+    say("waiting")
+    while not stop_event.is_set():
         pid = find_pid()
         if pid:
-            time.sleep(8)
+            say("attaching")
+            if settle and stop_event.wait(settle):
+                return None
             return AzimuthHook(pid)
-        time.sleep(poll)
+        stop_event.wait(poll)
+    return None
