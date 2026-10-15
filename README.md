@@ -11,7 +11,7 @@ Supports Azimuth version: `v0.9.9`
 2. Double-click `SimpleImpulseH2.exe`.
 3. Drive and enjoy independent trigger haptics!
 
-## Wary of unknown .exe and .dll files from the internet? Me too.
+### Wary of unknown .exe and .dll files from the internet? Me too.
 ### You can build your own .dll and .exe from scratch using the scripts in this release.
 
 ## Building from Source (GPLv3)
