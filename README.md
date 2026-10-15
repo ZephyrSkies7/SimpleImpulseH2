@@ -2,6 +2,8 @@
 
 Hooks onto Azimuth's natural data output for controller vibrations and translates them using Microsoft's GameInput service to craft a .DLL that directly outputs impulse trigger outputs to a supported controller.
 
+# This project is now deprecated with the release of Azimuth v0.9.10. This still works, but the native implementation may suit your needs more.
+
 Current release is: `v1.0`
 
 Supports Azimuth version: `v0.9.9`
