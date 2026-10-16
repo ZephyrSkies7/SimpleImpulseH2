@@ -37,15 +37,10 @@ extern "C" {
         static GameInputInitializer initializer;
         if (!g_gameInput) return;
 
-        // Priority Override: If the right trigger is active, ignore main motors completely.
-        // This is the only place that decision is made; callers just pass the values through.
+        // Removed Priority Override: Now allows both main motors and triggers to be active simultaneously.
+        // This enables concurrent sending of all 4 streams of controller vibration data.
         float finalLeftMotor = leftMotor;
         float finalRightMotor = rightMotor;
-
-        if (rightTrigger > 0.05f) {
-            finalLeftMotor = 0.0f;
-            finalRightMotor = 0.0f;
-        }
 
         const float target[4] = {
             Clamp01(finalLeftMotor), Clamp01(finalRightMotor),
